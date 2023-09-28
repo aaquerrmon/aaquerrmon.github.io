@@ -40,7 +40,7 @@ function init()
 
 function loadScene()
 {
-    const materialRobot = new THREE.MeshBasicMaterial({color : 'red', wireframe : true});
+    const materialRobot = new THREE.MeshBasicMaterial({color : 'red', wireframe : true, side: THREE.DoubleSide});
     const materialSuelo = new THREE.MeshBasicMaterial({color : 'blue', wireframe : false});
 
     // Robot
@@ -134,12 +134,13 @@ function loadScene()
     )
     const indices = [
         // Dibujar cubo
-        0, 1, 3,  3, 2, 0,  0, 1, 5,  5, 4, 1,
-        1, 3, 5,  5, 1, 7,  7, 3, 2,  3, 2, 6,
-        0, 4, 6,  2, 0, 4,  4, 5, 6,  7, 4, 5,
+        1, 0, 3,  3, 0, 2,  0, 2, 4,  4, 2, 6,
+        0, 1, 4,  4, 1, 5,  5, 1, 7,  7, 1, 3,
+        3, 2, 7,  7, 2, 6,  6, 7, 4,  4, 7, 5,
         // Dibujar parte irregular
-        5, 9, 11,  11, 5, 7,  7, 6, 11,  11, 6, 10, 
-        10, 4, 6,  6, 4, 8,  8, 9, 10,  10, 11, 8
+        5, 9, 7,  7, 9, 11,  6, 10, 7,  7, 11, 6, 
+        6, 10, 4,  4, 10, 8,  9, 8, 11,  11, 8, 10,
+        5, 9, 4,  4, 8, 9
     ]
     
     geoPinza.setIndex(indices);
@@ -172,8 +173,8 @@ function loadScene()
 
 function update()
 {
-    //angulo += 0.01;
-    //esferaCubo.rotation.y = angulo;
+    angulo += 0.01;
+    //robot.rotation.y = angulo;
 }
 
 function render()
