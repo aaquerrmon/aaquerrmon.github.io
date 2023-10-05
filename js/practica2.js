@@ -127,19 +127,19 @@ function loadScene()
         9.5, 10, 2,
         // Parte irregular
         28.5, -7, 0,
-        28.5, -7, -2,
+        28.5, -7, 2,
         28.5, 7, 0,
-        28.5, 7, -2
+        28.5, 7, 2
     ]
     )
     const indices = [
         // Dibujar cubo
-        1, 0, 3,  3, 0, 2,  0, 2, 4,  4, 2, 6,
-        0, 1, 4,  4, 1, 5,  5, 1, 7,  7, 1, 3,
+        1, 0, 3,  3, 0, 2,  0, 4, 6,  6, 0, 2,
+        0, 4, 5,  0, 1, 5,  1, 5, 7,  7, 1, 3,
         3, 2, 7,  7, 2, 6,  6, 7, 4,  4, 7, 5,
         // Dibujar parte irregular
-        5, 9, 7,  7, 9, 11,  6, 10, 7,  7, 11, 6, 
-        6, 10, 4,  4, 10, 8,  9, 8, 11,  11, 8, 10,
+        5, 9, 11,  7, 5, 11,  6, 10, 11,  7, 11, 6, 
+        6, 10, 4,  4, 10, 8,  9, 8, 10,  11, 9, 10,
         5, 9, 4,  4, 8, 9
     ]
     
@@ -149,9 +149,9 @@ function loadScene()
     const pinzaDerecha = new THREE.Mesh(geoPinza, materialRobot);
     const pinzaIzquierda = new THREE.Mesh(geoPinza, materialRobot);
 
-    pinzaDerecha.position.set(0, 0, -15);
-    pinzaIzquierda.position.set(0, 0, 15);
-    pinzaIzquierda.rotation.x = Math.PI;
+    pinzaIzquierda.position.set(0, 0, -15);
+    pinzaDerecha.position.set(0, 0, 15);
+    pinzaDerecha.rotation.x = Math.PI;
 
     mano.add(pinzaDerecha);
     mano.add(pinzaIzquierda);
