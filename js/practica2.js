@@ -149,8 +149,8 @@ function loadScene()
     const pinzaDerecha = new THREE.Mesh(geoPinza, materialRobot);
     const pinzaIzquierda = new THREE.Mesh(geoPinza, materialRobot);
 
-    pinzaIzquierda.position.set(0, 0, -15);
-    pinzaDerecha.position.set(0, 0, 15);
+    pinzaIzquierda.position.set(0, 0, -10);
+    pinzaDerecha.position.set(0, 0, 10);
     pinzaDerecha.rotation.x = Math.PI;
 
     mano.add(pinzaDerecha);
