@@ -1,0 +1,11 @@
+Model Information:
+* title:	Grada Fija 5x 2.30x 2.14
+* source:	https://sketchfab.com/3d-models/grada-fija-5x-230x-214-5c88598e4d65455796c32745d1172865
+* author:	Mundo Urbano (https://sketchfab.com/mundourbano)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Grada Fija 5x 2.30x 2.14" (https://sketchfab.com/3d-models/grada-fija-5x-230x-214-5c88598e4d65455796c32745d1172865) by Mundo Urbano (https://sketchfab.com/mundourbano) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -96,9 +96,13 @@ function init()
     const ambiental = new THREE.AmbientLight(0x222222);
     scene.add(ambiental);
 
-    const direccional = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-    direccional.position.set(-100, 100, -100); //de donde viene la luz
+    const direccional = new THREE.DirectionalLight(0xFFFFFF, 0.7);
+    direccional.position.set(-100, 100, -100);
     direccional.castShadow = true;
+    direccional.shadow.camera.left = -20;
+    direccional.shadow.camera.right = 20;
+    direccional.shadow.camera.top = 50;
+    direccional.shadow.camera.bottom = -10;
 
     scene.add(direccional);
     scene.add(new THREE.CameraHelper(direccional.shadow.camera));
