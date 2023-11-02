@@ -18,7 +18,6 @@ let renderer, scene, camera;
 // Otras globales
 let robot, base, brazo, antebrazo, mano, pinzaDerecha, pinzaIzquierda;
 let pinzaX, pinzaY, pinzaDerechaZ, pinzaIzquierdaZ;
-let angulo = 0;
 let texSuelo, texArriba, texAbajo, texRotula;
 let materialSuelo, materialRobot, materialArriba, materialAbajo, materialPinzas, materialRotula;
 
@@ -37,17 +36,15 @@ materialSuelo = new THREE.MeshStandardMaterial({color : 'gray', map : texSuelo})
 materialArriba = new THREE.MeshPhongMaterial({color : 'yellow', map : texArriba, specular : 'gray', shininess: 30});
 materialAbajo = new THREE.MeshLambertMaterial({color : 'white', map : texAbajo});
 materialPinzas = new THREE.MeshStandardMaterial({color : 'black', map : texAbajo, side: THREE.DoubleSide});
-
 materialRotula = new THREE.MeshBasicMaterial({color : 'gray', envMap : texRotula})
 
 
 // Variables globales para rastrear el movimiento
-let robotPosition = new THREE.Vector3(0, 0, 0);  // Inicialmente, el robot se encuentra en el centro del plano
-const movementSpeed = 10;  // Velocidad de movimiento del robot
+let robotPosition = new THREE.Vector3(0, 0, 0);
+const movementSpeed = 10;
 
 
 // Interfaz
-let stats;
 let effectController;
 
 // Controlador de cámara
@@ -56,7 +53,7 @@ let cameraControls;
 
 // Cámara cenital
 let cameraCenital;
-const L = 74;//lado de las miniventanas
+const L = 74;
 
 
 // Acciones
@@ -79,7 +76,6 @@ function init()
 
     // Escena
     scene = new THREE.Scene();
-    //scene.background = new THREE.Color(0.7, 0.9, 0.9);
 
     // Camara
     camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -119,8 +115,6 @@ function init()
     // Eventos
     window.addEventListener("resize", updateAspectRatio);
     document.addEventListener('keydown', handleKeyDown);
-
-    //renderer.domElement.addEventListener("dblclick", animate);
 }
 
 function handleKeyDown(event) {
@@ -354,8 +348,6 @@ function setupGUI()
         giroPinza: 0.0,
         separacionPinza: 10.0,
         alambres: false
-        //separacion: 0,
-        //coloralambres: 'rgb(150, 150, 150)'
     }
 
     // Crear la GUI
@@ -372,10 +364,6 @@ function setupGUI()
     h.add(effectController, "alambres").name("alambres");
 
     h.add({ animate: animate }, 'animate').name('Anima'); 
-    //h.add(effectController, "separacion", {"Ninguna": 0, "Media": 2, "Total": 5}).name("Separacion");
-    
-    //h.addColor(effectController, "coloralambres").name("Color Alambres");
-
 }
 
 
@@ -409,8 +397,6 @@ function updateAspectRatio()
 
 function update()
 {
-    //stats.update();
-    //effectController.giroY += 0.1;
     robot.position.set(robotPosition.x, robotPosition.y, robotPosition.z);
     base.rotation.y = effectController.giroBase * Math.PI / 180;
     brazo.rotation.z = effectController.giroBrazo * Math.PI / 180;
@@ -420,8 +406,6 @@ function update()
 
     pinzaIzquierda.position.set(pinzaX, pinzaY, pinzaIzquierdaZ - effectController.separacionPinza + 10);
     pinzaDerecha.position.set(pinzaX, pinzaY, pinzaDerechaZ + effectController.separacionPinza - 10);
-
-
 
     if (effectController.alambres === true){
         materialRobot.wireframe = true;
@@ -441,7 +425,6 @@ function update()
 }
 
 function animate() {
-    // Rotación simple para la animación
     new TWEEN.Tween(robot.position)
         .to({x : [0, 0], y : [100, 0], z : [0, 0]}, 5000)
         .interpolation(TWEEN.Interpolation.Bezier)
@@ -459,14 +442,13 @@ function animate() {
         .interpolation(TWEEN.Interpolation.Linear)
         .easing(TWEEN.Easing.Exponential.InOut)
         .start();
-    
 }
 
 function render()
 {
     requestAnimationFrame(render);
     update();
-    TWEEN.update(); // Actualizar la animación Tween
+    TWEEN.update();
     renderer.clear();
 
     // Renderiza la cámara normal

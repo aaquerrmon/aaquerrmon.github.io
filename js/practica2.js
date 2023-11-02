@@ -157,8 +157,6 @@ function loadScene()
     mano.add(pinzaIzquierda);
     antebrazo.add(mano);
 
-
-    
     scene.add(robot);
 
     // Suelo
@@ -171,15 +169,9 @@ function loadScene()
     scene.add(new THREE.AxisHelper(2));
 }
 
-function update()
-{
-    angulo += 0.01;
-    //robot.rotation.y = angulo;
-}
 
 function render()
 {
     requestAnimationFrame(render);
-    update();
     renderer.render(scene, camera);
 }

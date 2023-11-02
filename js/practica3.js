@@ -21,10 +21,8 @@ let cameraControls;
 
 // Cámara cenital
 let cameraCenital;
-const L = 74;//lado de las miniventanas
+const L = 74;
 
-// Miniatura Renderer
-let miniaturaRenderer;
 
 // Acciones
 init();
@@ -43,7 +41,6 @@ function init()
 
     // Escena
     scene = new THREE.Scene();
-    //scene.background = new THREE.Color(0.7, 0.9, 0.9);
 
     // Camara
     camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -200,8 +197,6 @@ function loadScene()
     mano.add(pinzaDerecha);
     mano.add(pinzaIzquierda);
     antebrazo.add(mano);
-
-
     
     scene.add(robot);
 
@@ -242,18 +237,9 @@ function updateAspectRatio()
     cameraCenital.updateProjectionMatrix();
 }
 
-
-
-function update()
-{
-    angulo += 0.005;
-    //robot.rotation.y = angulo;
-}
-
 function render()
 {
     requestAnimationFrame(render);
-    update();
     renderer.clear();
 
     // Renderiza la cámara normal

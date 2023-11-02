@@ -19,14 +19,13 @@ let renderer, scene, cameraTerceraPersona, cameraPrimeraPersona, cameraRetroviso
 let cochePosicion = new THREE.Vector3(150, 0.5, 0);  
 
 // Luces
-let focal, direccional, ambiental;
+let focal, focal2, ambiental;
 
 // Cronómetro
 let cronometroElement = document.getElementById("cronometro");
 let startTime;
 let elapsedTime = 0;
 let running = false;
-
 
 // Interfaz
 let stats;
@@ -35,9 +34,8 @@ let effectController;
 // Controlador de cámara
 let cameraControls, activeCamera, terceraPersonaActiva;
 
-
 // Coche
-let coche;
+let coche, velocidad = 0;
 const L = 74;
 
 // Acciones
@@ -52,9 +50,11 @@ function init()
     // Motor de render
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(new THREE.Color(1, 1, 1));
+    renderer.setClearColor(new THREE.Color(0xAABBCC));
     document.getElementById("container").appendChild(renderer.domElement);
     renderer.autoClear = false;
+    renderer.antialias = true;
+    renderer.shadowMap.enabled = true;
 
     // Escena
     scene = new THREE.Scene();
@@ -76,18 +76,8 @@ function init()
     ambiental = new THREE.AmbientLight(0xFFFFFF, 1); // Color de la luz ambiental
     scene.add(ambiental);
     
-    direccional = new THREE.DirectionalLight(0xFFFFFF, 0.7);
-    direccional.position.set(450, 250, 200);
-    direccional.castShadow = true;
-    direccional.shadow.camera.left = -20;
-    direccional.shadow.camera.right = 20;
-    direccional.shadow.camera.top = 50;
-    direccional.shadow.camera.bottom = -10;
-    scene.add(direccional);
-    //scene.add(new THREE.CameraHelper(direccional.shadow.camera));
-
-    focal = new THREE.SpotLight(0xFFFFFF, 0.4);
-    focal.position.set(cochePosicion.x + 200, cochePosicion.y + 100, cochePosicion.z);
+    focal = new THREE.SpotLight(0xFFFFFF, 0.7);
+    focal.position.set(370, 90, -110);
     focal.target.position.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
     focal.angle = Math.PI / 3;
     focal.penumbra = 0.3;
@@ -95,6 +85,16 @@ function init()
     scene.add(focal);
     scene.add(focal.target);
     scene.add(new THREE.CameraHelper(focal.shadow.camera));
+
+    focal2 = new THREE.SpotLight(0xFFFFFF, 0.7);
+    focal2.position.set(370, 90, 110);
+    focal2.target.position.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
+    focal2.angle = Math.PI / 3;
+    focal2.penumbra = 0.3;
+    focal2.castShadow = true;
+    scene.add(focal2);
+    scene.add(focal2.target);
+    scene.add(new THREE.CameraHelper(focal2.shadow.camera));
     
 
     // Eventos
@@ -104,21 +104,21 @@ function init()
 }
 
 function handleKeyDown(event) {
-    let newX = cochePosicion.x;
-    let newZ = cochePosicion.z;
-    const movementSpeed = 3;
+    const movementSpeed = 0.001, velocidad_max = 0.01, velocidad_min = -0.01;
     const rotationSpeed = Math.PI / 32;
 
     switch (event.key) {
         case 'ArrowUp':
             // Mover hacia adelante
-            newZ += Math.cos(coche.rotation.y) * movementSpeed;
-            newX += Math.sin(coche.rotation.y) * movementSpeed;
+            if (velocidad <= velocidad_max){
+                velocidad += movementSpeed;
+            }
             break;
         case 'ArrowDown':
             // Mover hacia atrás
-            newZ -= Math.cos(coche.rotation.y) * movementSpeed;
-            newX -= Math.sin(coche.rotation.y) * movementSpeed;
+            if (velocidad >= velocidad_min){
+                velocidad -= movementSpeed;
+            }
             break;
         case 'ArrowLeft':
             // Girar a la izquierda
@@ -131,29 +131,6 @@ function handleKeyDown(event) {
     }
 
 
-    // Limitar el movimiento dentro del área entre los dos rectángulos
-    if ((newX > 125 && newX < 175 && newZ > -220 && newZ < 220) ||
-        (newX < -125 && newX > -175 && newZ > -220 && newZ < 220) ||
-        (newX > -175 && newX < 175 && newZ > 150 && newZ < 220) ||
-        (newX > -175 && newX < 175 && newZ < -150 && newZ > -220))
-    {
-        cochePosicion.x = newX;
-        console.log(newX)
-        cochePosicion.z = newZ;
-        console.log(newZ)
-
-        coche = scene.getObjectByName('coche');
-        coche.position.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
-        cameraTerceraPersona.position.set(cochePosicion.x - 150 * Math.sin(coche.rotation.y), cochePosicion.y + 150, cochePosicion.z - 150 * Math.cos(coche.rotation.y));
-        cameraTerceraPersona.lookAt(100, 0, 100);
-        cameraPrimeraPersona.position.set(cochePosicion.x - 15 * Math.sin(coche.rotation.y), cochePosicion.y + 13, cochePosicion.z - 15 * Math.cos(coche.rotation.y));
-        cameraPrimeraPersona.lookAt(100, 100, 100);
-        cameraPrimeraPersona.rotateY(-Math.PI);
-        cameraRetrovisor.position.set(cochePosicion.x + 5 * Math.sin(coche.rotation.y) , cochePosicion.y + 20  , cochePosicion.z + 5 * Math.cos(coche.rotation.y));
-        cameraRetrovisor.lookAt(cochePosicion.x, cochePosicion.y + 15, cochePosicion.z - 15);
-        cameraControls.target.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
-        focal.target.updateMatrixWorld();
-    }
 }
 
 function startCronometro() {
@@ -211,9 +188,14 @@ function loadScene()
 {
 
     // Cesped
-    const texCesped = new THREE.TextureLoader().load("./images/cesped.jpg");
+    const texCesped = new THREE.TextureLoader().load("./images/cesped.jpg", function ( texture ) {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.offset.set(0, 0);
+        texture.repeat.set(5, 5);
+    });
     const materialCesped = new THREE.MeshBasicMaterial({color : 'green', wireframe : false, map : texCesped});
     const cesped = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1000, 1000), materialCesped);
+    cesped.receiveShadow = true;
     cesped.position.set(0, -0.5, 0);
     cesped.rotation.x = -Math.PI/2;
 
@@ -222,9 +204,13 @@ function loadScene()
     const texCircuito = new THREE.TextureLoader().load("./images/circuito.jpeg");
     const materialCircuito = new THREE.MeshBasicMaterial({color : 'gray', wireframe : false, map : texCircuito});
     const carretera1 = new THREE.Mesh(new THREE.PlaneGeometry(50, 400, 1000, 1000), materialCircuito);
+    carretera1.receiveShadow = true;
     const carretera2 = new THREE.Mesh(new THREE.PlaneGeometry(50, 400, 1000, 1000), materialCircuito);
+    carretera2.receiveShadow = true;
     const carretera3 = new THREE.Mesh(new THREE.PlaneGeometry(50, 350, 1000, 1000), materialCircuito);
+    carretera3.receiveShadow = true;
     const carretera4 = new THREE.Mesh(new THREE.PlaneGeometry(50, 350, 1000, 1000), materialCircuito);
+    carretera4.receiveShadow = true;
 
     carretera1.position.set(150, 0, 0);
     carretera2.position.set(-150, 0, 0);
@@ -296,7 +282,7 @@ function loadScene()
                     gltf.scene.position.x = 330;
                     gltf.scene.position.y = 0;
                     gltf.scene.rotation.y = -Math.PI/2;
-                    gltf.scene.name = 'neumaticos';
+                    gltf.scene.name = 'gradas';
                     gltf.scene.scale.set(1, 1, 1);
                     circuito.add(gltf.scene);
                     gltf.scene.traverse(ob=>{
@@ -318,6 +304,37 @@ function loadScene()
                     })
                 }
     );
+
+    //Focos de la pista
+    gltfloader.load('models/stadium_light/scene.gltf',
+                function(gltf){
+                    gltf.scene.position.x = 370;
+                    gltf.scene.position.y = -10;
+                    gltf.scene.position.z = -110;
+                    gltf.scene.name = 'foco1';
+                    gltf.scene.rotation.y = -Math.PI;
+                    gltf.scene.scale.set(0.03, 0.04, 0.03);
+                    circuito.add(gltf.scene);
+                    gltf.scene.traverse(ob=>{
+                        if (ob.isObject3D) ob.castShadow = ob.receiveShadow = true;
+                    })
+                }
+    );
+    gltfloader.load('models/stadium_light/scene.gltf',
+    function(gltf){
+        gltf.scene.position.x = 370;
+        gltf.scene.position.y = -10;
+        gltf.scene.position.z = 110;
+        gltf.scene.name = 'foco2';
+        gltf.scene.rotation.y = -Math.PI;
+        gltf.scene.scale.set(0.03, 0.04, 0.03);
+        circuito.add(gltf.scene);
+        gltf.scene.traverse(ob=>{
+            if (ob.isObject3D) ob.castShadow = ob.receiveShadow = true;
+        })
+    }
+);
+    
     //Coche
     coche = new THREE.Object3D();
     gltfloader.load('models/red_bull_racing/scene.gltf',
@@ -331,8 +348,22 @@ function loadScene()
         gltf.scene.traverse(ob=>{
             if (ob.isObject3D) ob.castShadow = ob.receiveShadow = true;
         })
-    }
-);
+        }
+    );
+
+    // Habitación cúbica
+    const paredes = [];
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/posx.jpg")}));
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/negx.jpg")}));
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/posy.jpg")}));
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/negy.jpg")}));
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/posz.jpg")}));
+    paredes.push(new THREE.MeshBasicMaterial({side : THREE.BackSide, map : new THREE.TextureLoader().load("./images/Footballfield/negz.jpg")}));
+
+    const geoHabitacion = new THREE.BoxGeometry(1000, 1000, 1000);
+    const habitacion = new THREE.Mesh(geoHabitacion, paredes);
+    scene.add(habitacion);
+
     coche.add(cameraTerceraPersona);
     coche.add(cameraPrimeraPersona);
     coche.add(cameraRetrovisor);
@@ -384,17 +415,54 @@ function updateAspectRatio()
         cameraRetrovisor.top = L;
         cameraRetrovisor.bottom = -L;
     }
-
     cameraRetrovisor.updateProjectionMatrix();
 }
 
+function updateCar(){
+    requestAnimationFrame(updateCar);
+    let newX = cochePosicion.x;
+    let newZ = cochePosicion.z;
+    if (velocidad != 0){
+        if (velocidad > 0){
+            newZ += Math.cos(coche.rotation.y) * velocidad;
+            newX += Math.sin(coche.rotation.y) * velocidad;
+        }
+        else{
+            newZ -= Math.cos(coche.rotation.y) * velocidad;
+            newX -= Math.sin(coche.rotation.y) * velocidad;
+        }
 
+
+        // Limitar el movimiento dentro del área entre los dos rectángulos
+        if ((newX > 125 && newX < 175 && newZ > -220 && newZ < 220) ||
+            (newX < -125 && newX > -175 && newZ > -220 && newZ < 220) ||
+            (newX > -175 && newX < 175 && newZ > 150 && newZ < 220) ||
+            (newX > -175 && newX < 175 && newZ < -150 && newZ > -220))
+        {
+            cochePosicion.x = newX;
+            console.log(newX)
+            cochePosicion.z = newZ;
+            console.log(newZ)
+
+            coche = scene.getObjectByName('coche');
+            coche.position.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
+            cameraTerceraPersona.position.set(cochePosicion.x - 150 * Math.sin(coche.rotation.y), cochePosicion.y + 150, cochePosicion.z - 150 * Math.cos(coche.rotation.y));
+            cameraTerceraPersona.lookAt(100, 0, 100);
+            cameraPrimeraPersona.position.set(cochePosicion.x - 15 * Math.sin(coche.rotation.y), cochePosicion.y + 13, cochePosicion.z - 15 * Math.cos(coche.rotation.y));
+            cameraPrimeraPersona.lookAt(100, 100, 100);
+            cameraPrimeraPersona.rotateY(-Math.PI);
+            cameraRetrovisor.position.set(cochePosicion.x + 5 * Math.sin(coche.rotation.y) , cochePosicion.y + 20  , cochePosicion.z + 5 * Math.cos(coche.rotation.y));
+            cameraRetrovisor.lookAt(cochePosicion.x, cochePosicion.y + 15, cochePosicion.z - 15);
+            cameraControls.target.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
+        }
+    }
+}
 
 function render()
 {
     requestAnimationFrame(render);
     renderer.clear();
-    console.log(focal.position);
+    updateCar();
 
     cameraControls.object = activeCamera;
     cameraControls.update();
