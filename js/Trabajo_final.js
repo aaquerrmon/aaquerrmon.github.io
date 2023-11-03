@@ -21,6 +21,9 @@ let cochePosicion = new THREE.Vector3(150, 0.5, 0);
 // Luces
 let focal, focal2, ambiental;
 
+// Video
+let video;
+
 // Cronómetro
 let cronometroElement = document.getElementById("cronometro");
 let startTime;
@@ -84,7 +87,7 @@ function init()
     focal.castShadow = true;
     scene.add(focal);
     scene.add(focal.target);
-    scene.add(new THREE.CameraHelper(focal.shadow.camera));
+    //scene.add(new THREE.CameraHelper(focal.shadow.camera));
 
     focal2 = new THREE.SpotLight(0xFFFFFF, 0.7);
     focal2.position.set(370, 90, 110);
@@ -94,7 +97,7 @@ function init()
     focal2.castShadow = true;
     scene.add(focal2);
     scene.add(focal2.target);
-    scene.add(new THREE.CameraHelper(focal2.shadow.camera));
+    //scene.add(new THREE.CameraHelper(focal2.shadow.camera));
     
 
     // Eventos
@@ -332,8 +335,20 @@ function loadScene()
         gltf.scene.traverse(ob=>{
             if (ob.isObject3D) ob.castShadow = ob.receiveShadow = true;
         })
-    }
-);
+        }
+    );
+
+    // Pantalla de cine
+    video = document.createElement('video');
+    video.src = './videos/red_bull.mp4';
+    video.load();
+    video.muted = true;
+    const videoTextura = new THREE.VideoTexture(video);
+    const matPantalla = new THREE.MeshBasicMaterial({map : videoTextura, side : THREE.DoubleSide});
+    const pantalla = new THREE.Mesh(new THREE.PlaneGeometry(220, 110, 4, 4), matPantalla);
+    pantalla.position.set(-250, 55, 0);
+    pantalla.rotation.y = Math.PI / 2;
+    circuito.add(pantalla);
     
     //Coche
     coche = new THREE.Object3D();
@@ -350,6 +365,7 @@ function loadScene()
         })
         }
     );
+
 
     // Habitación cúbica
     const paredes = [];
@@ -378,7 +394,10 @@ function setupGUI()
 {
     // Definición del objeto controlador
     effectController = {
-        TerceraPersona: true
+        TerceraPersona: true,
+        silencio : true,
+        play : function(){video.play();},
+        pause : function(){video.pause();}
     }
 
     // Crear la GUI
@@ -387,6 +406,10 @@ function setupGUI()
     // Construir el menú de widgets
     const h = gui.addFolder('Control Coche');
     h.add(effectController, "TerceraPersona").name("TerceraPersona").onChange(toggleCameraMode);
+    const videoFolder = gui.addFolder("Video control");
+    videoFolder.add(effectController, "silencio").onChange(v => {video.muted = v;}).name("Mutear");
+    videoFolder.add(effectController, "play");
+    videoFolder.add(effectController, "pause");
 
 }
 
