@@ -104,7 +104,7 @@ function init()
 }
 
 function handleKeyDown(event) {
-    const movementSpeed = 0.001, velocidad_max = 0.01, velocidad_min = -0.01;
+    const movementSpeed = 0.001, velocidad_max = 0.005, velocidad_min = -0.005;
     const rotationSpeed = Math.PI / 32;
 
     switch (event.key) {
@@ -422,27 +422,19 @@ function updateCar(){
     requestAnimationFrame(updateCar);
     let newX = cochePosicion.x;
     let newZ = cochePosicion.z;
+    console.log(velocidad);
     if (velocidad != 0){
-        if (velocidad > 0){
-            newZ += Math.cos(coche.rotation.y) * velocidad;
-            newX += Math.sin(coche.rotation.y) * velocidad;
-        }
-        else{
-            newZ -= Math.cos(coche.rotation.y) * velocidad;
-            newX -= Math.sin(coche.rotation.y) * velocidad;
-        }
-
+        newZ += Math.cos(coche.rotation.y) * velocidad;
+        newX += Math.sin(coche.rotation.y) * velocidad;
 
         // Limitar el movimiento dentro del área entre los dos rectángulos
         if ((newX > 125 && newX < 175 && newZ > -220 && newZ < 220) ||
             (newX < -125 && newX > -175 && newZ > -220 && newZ < 220) ||
-            (newX > -175 && newX < 175 && newZ > 150 && newZ < 220) ||
-            (newX > -175 && newX < 175 && newZ < -150 && newZ > -220))
+            (newX > -175 && newX < 175 && newZ > 175 && newZ < 220) ||
+            (newX > -175 && newX < 175 && newZ < -175 && newZ > -220))
         {
             cochePosicion.x = newX;
-            console.log(newX)
             cochePosicion.z = newZ;
-            console.log(newZ)
 
             coche = scene.getObjectByName('coche');
             coche.position.set(cochePosicion.x, cochePosicion.y, cochePosicion.z);
